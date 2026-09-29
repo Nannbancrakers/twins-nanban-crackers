@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products - Twins & Nanban Crackers</title>
+    <link rel="icon" type="image/png" href="assets/twins_nanban_logo.png">
+    <link rel="stylesheet" href="css/styles.css?v=2">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+    <!-- Header -->
+    <div id="header-container"></div>
+
+    <!-- Page Banner -->
+    <section class="page-banner products-hero">
+        <div class="container">
+            <h1>Our Products</h1>
+            <p>Premium quality crackers and fireworks for every celebration</p>
+        </div>
+    </section>
+
+    <!-- Products Catalog -->
+    <section class="catalog">
+        <div class="container catalog-layout">
+            <!-- Sidebar Toggle Button REMOVED - Sidebar bar itself is clickable -->
+
+            <!-- Sidebar Filters (Desktop) -->
+            <aside class="catalog-sidebar" id="catalog-toolbar" style="display:none;">
+                <button type="button" class="sidebar-head sidebar-toggle" id="sidebar-toggle" aria-expanded="true">
+                    <span class="sidebar-title-text">Filter Products</span>
+                    <span class="filter-chevron">‹</span>
+                </button>
+                <div class="sidebar-body" id="sidebar-body">
+                    <div class="sidebar-block">
+                        <h3 class="sidebar-title">Sort by Price</h3>
+                        <select id="price-sort" class="price-filter-dropdown sidebar-sort-select">
+                            <option value="relevance">Relevance</option>
+                            <option value="price-low-high">Price: Low to High</option>
+                            <option value="price-high-low">Price: High to Low</option>
+                            <option value="price-range">Price Range</option>
+                        </select>
+                    </div>
+
+                    <div class="sidebar-block">
+                        <h3 class="sidebar-title">Categories</h3>
+                        <div class="category-filter" id="category-filter"></div>
+                        <button class="sidebar-clear" id="sidebar-clear-filters">Clear All Filters</button>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Products Main Area -->
+            <div class="catalog-main">
+                <!-- Mobile Filter Toolbar -->
+                <div class="catalog-toolbar mobile-filter-bar" id="mobile-filter-bar" style="display:none;">
+                    <div class="mobile-filter-top">
+                        <button class="filter-toggle-btn" id="filter-toggle-btn">
+                            <svg class="filter-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                            </svg><span class="filter-count-badge" id="mobile-filter-badge" style="display:none;">0</span>
+                        </button>
+                    </div>
+                    <div class="catalog-search mobile-search-full">
+                        <input type="text" id="catalog-search-input-mobile" placeholder="Search products...">
+                    </div>
+                </div>
+
+                <!-- Active Filter Chips -->
+                <div class="catalog-active-filters" id="catalog-active-filters" style="display:none;"></div>
+
+                <!-- Product Count & Search Toolbar -->
+                <div class="catalog-count-sort-wrapper">
+                    <div class="catalog-count" id="catalog-count"></div>
+                    <div class="catalog-search catalog-search-inline">
+                        <svg class="search-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input type="text" id="catalog-search-input" placeholder="Search products...">
+                        <button class="search-clear-btn" id="search-clear-btn" style="display: none;" aria-label="Clear search">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Price Range Filter (Shows when selected) -->
+                <div class="price-range-filter" id="price-range-filter" style="display: none;">
+                    <input type="number" id="min-price" placeholder="Min Price" class="price-input">
+                    <span class="price-separator">-</span>
+                    <input type="number" id="max-price" placeholder="Max Price" class="price-input">
+                    <button class="btn-apply-price" id="apply-price">Apply</button>
+                </div>
+
+                <!-- Loading / Products Table -->
+                <div class="catalog-loading" id="catalog-loading">Loading products...</div>
+                <div id="products-grid"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mobile Filter Drawer -->
+    <div class="filter-overlay" id="filter-overlay"></div>
+    <div class="filter-drawer" id="filter-drawer">
+        <div class="filter-drawer-header">
+            <h3>Filters</h3>
+            <button class="filter-drawer-close" id="filter-drawer-close">&times;</button>
+        </div>
+        <div class="filter-drawer-body">
+            <h4 class="filter-group-title">Sort by Price</h4>
+            <div class="mobile-sort-section">
+                <div class="sort-options-mobile">
+                    <select id="price-sort-mobile" class="price-filter-dropdown">
+                        <option value="relevance">Relevance</option>
+                        <option value="price-low-high">Price: Low to High</option>
+                        <option value="price-high-low">Price: High to Low</option>
+                    </select>
+                </div>
+            </div>
+
+            <h4 class="filter-group-title">Categories</h4>
+            <div class="category-filter" id="category-filter-mobile"></div>
+        </div>
+        <div class="filter-drawer-footer">
+            <button class="btn btn-outline-drawer" id="filter-clear-btn">Clear All</button>
+            <button class="btn btn-primary" id="filter-apply-btn">Apply Filters</button>
+        </div>
+    </div>
+
+    <!-- Cart Bottom Bar -->
+    <div class="cart-bottom-bar" id="cart-bottom-bar" role="region" aria-label="Cart summary">
+        <div class="cart-bottom-info">
+            <span class="cart-bottom-icon" aria-hidden="true">🛒</span>
+            <span class="cart-bottom-count" id="cart-bottom-count">0</span>
+            <span class="cart-bottom-label">selected</span>
+        </div>
+        <a href="cart.html" class="btn btn-primary cart-bottom-view">View Cart</a>
+    </div>
+
+    <!-- Footer -->
+    <div id="footer-container"></div>
+
+    <!-- Product Image Lightbox -->
+    <div class="lightbox" id="lightbox" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Product image">
+        <button class="lightbox-close" id="lightbox-close" aria-label="Close">&times;</button>
+        <figure class="lightbox-figure">
+            <img id="lightbox-img" src="" alt="">
+            <figcaption class="lightbox-caption" id="lightbox-caption"></figcaption>
+        </figure>
+    </div>
+
+    <script src="js/main.js?v=2"></script>
+</body>
+</html>

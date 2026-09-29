@@ -1,0 +1,54 @@
+<header class="header">
+    <div class="container">
+        <div class="header-content">
+            <a href="index.html" class="logo">
+                <img src="assets/twins_nanban_logo.png" alt="Twins & Nanban Crackers Logo" class="logo-img">
+            </a>
+            
+            <nav class="nav-menu">
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="products.html">Products</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="#" id="poster-menu-link">Poster</a></li>
+                    <li><a href="#" id="pricelist-download-link">Price List</a></li>
+                </ul>
+            </nav>
+
+            <div class="header-actions">
+                <button class="search-btn" id="search-btn" aria-label="Search">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
+                </button>
+                <button class="cart-btn" id="cart-btn" aria-label="Cart">
+                    <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M3 4h2.2l2.7 12.5a1.9 1.9 0 0 0 1.85 1.5h8.5a1.9 1.9 0 0 0 1.85-1.47L21 8H6"/>
+                        <circle cx="9.5" cy="20.5" r="1.4" fill="currentColor" stroke="none"/>
+                        <circle cx="17.5" cy="20.5" r="1.4" fill="currentColor" stroke="none"/>
+                        <path d="M2 7h4"/>
+                    </svg>
+                    <span class="cart-count" id="cart-count">0</span>
+                </button>
+                <button class="menu-toggle" id="menu-toggle" aria-label="Menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="search-bar" id="search-bar">
+        <input type="text" id="search-input" placeholder="Search products...">
+        <button type="submit" id="search-submit">Search</button>
+    </div>
+</header>
+
+<!-- Poster Overlay -->
+<div class="poster-overlay" id="poster-overlay" role="dialog" aria-modal="true" aria-label="Poster">
+    <div class="poster-modal">
+        <button class="poster-close" id="poster-close" aria-label="Close Poster">&times;</button>
+        <img src="assets/TwinsNanbanCrackers_poster.jpg" alt="Twins & Nanban Crackers Poster">
+    </div>
+</div>
