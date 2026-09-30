@@ -905,12 +905,18 @@
         async function loadProducts() {
             try {
                 const data = await api('/api/products');
-                products = data.products || [];
+                // Tolerate a null / missing / non-array payload.
+                products = (data && Array.isArray(data.products)) ? data.products : [];
                 console.log('[loadProducts] count =', products.length);
                 renderStats();
                 renderCategoryFilter();
                 renderTable();
             } catch (e) {
+                products = [];
+                renderStats();
+                renderCategoryFilter();
+                $('product-tbody').innerHTML =
+                    `<tr><td colspan="8" class="empty">Could not load products. ${escapeHtml(e.message || '')}</td></tr>`;
                 if (authenticated) toast(e.message, 'error');
             }
         }
@@ -1146,13 +1152,22 @@
         async function loadOrders() {
             try {
                 const data = await api('/api/orders');
-                orders = data.orders || [];
+                // Tolerate a null / missing / non-array payload so a first run
+                // with zero orders renders an empty table instead of throwing.
+                orders = (data && Array.isArray(data.orders)) ? data.orders : [];
                 console.log('[loadOrders] count =', orders.length);
-                ordersLoaded = true;
                 renderOrderStats();
                 renderOrders();
             } catch (e) {
+                orders = [];
+                renderOrderStats();
+                $('orders-tbody').innerHTML =
+                    `<tr><td colspan="8" class="empty">Could not load orders. ${escapeHtml(e.message || '')}</td></tr>`;
                 if (authenticated) toast(e.message, 'error');
+            } finally {
+                // Mark as attempted either way, otherwise switchView() re-fires
+                // this request on every tab switch.
+                ordersLoaded = true;
             }
         }
 
@@ -1207,7 +1222,10 @@
             const tbody = $('orders-tbody');
             const filtered = getFilteredOrders();
             if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" class="empty">No orders found.</td></tr>';
+                const msg = orders.length === 0
+                    ? 'No orders yet. New orders placed on the website will appear here.'
+                    : 'No orders match your search or filter.';
+                tbody.innerHTML = `<tr><td colspan="8" class="empty">${msg}</td></tr>`;
                 return;
             }
             tbody.innerHTML = filtered.map(o => {

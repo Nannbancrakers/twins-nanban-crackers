@@ -40,16 +40,38 @@ async function getGitHubFile() {
         }
     });
 
+    if (res.status === 404) {
+        return { sha: null, content: { products: [] } };
+    }
+
     if (!res.ok) {
         const text = await res.text();
         throw new Error(`GitHub read failed (${res.status}): ${text}`);
     }
 
     const data = await res.json();
-    return {
-        sha: data.sha,
-        content: JSON.parse(Buffer.from(data.content, 'base64').toString('utf8'))
-    };
+    const raw = data && typeof data.content === 'string'
+        ? Buffer.from(data.content, 'base64').toString('utf8')
+        : '';
+
+    // An empty file is the legitimate "nothing stored yet" state. Only a
+    // non-empty but unparseable body is real corruption worth surfacing.
+    let content = { products: [] };
+    if (raw && raw.trim() !== '') {
+        try {
+            content = JSON.parse(raw);
+        } catch (e) {
+            throw new Error(`${REPO_FILE} is not valid JSON (${e.message}). Repair the file in GitHub before continuing.`);
+        }
+        // Tolerate a bare array (legacy hand-written shape) rather than throwing,
+        // so a real product list is never mistaken for "no products".
+        if (Array.isArray(content)) content = { products: content };
+        else if (!content || typeof content !== 'object') {
+            throw new Error(`${REPO_FILE} must contain a JSON object with a "products" array.`);
+        }
+    }
+
+    return { sha: data ? data.sha || null : null, content };
 }
 
 /** Write content back to GitHub using the provided SHA (atomic replace + commit). */
@@ -58,6 +80,14 @@ async function putGitHubFile(sha, content, message) {
     if (!owner || !repo || !token) throw new Error(configError());
 
     const url = `https://api.github.com/repos/${owner}/${repo}/contents/${REPO_FILE}`;
+    const payload = {
+        message,
+        content: Buffer.from(JSON.stringify(content)).toString('base64'),
+        branch
+    };
+    // Omitting `sha` is what tells GitHub to create a brand new file.
+    if (sha) payload.sha = sha;
+
     const res = await fetch(url, {
         method: 'PUT',
         headers: {
@@ -66,12 +96,7 @@ async function putGitHubFile(sha, content, message) {
             'User-Agent': 'twins-nanban-admin',
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-            message,
-            content: Buffer.from(JSON.stringify(content)).toString('base64'),
-            sha,
-            branch
-        })
+        body: JSON.stringify(payload)
     });
 
     if (res.status === 409) {
@@ -87,10 +112,7 @@ async function putGitHubFile(sha, content, message) {
 /** Retrieve products array from the GitHub repo (single source of truth). */
 async function readProducts() {
     const { content } = await getGitHubFile();
-    if (!content || !Array.isArray(content.products)) {
-        throw new Error('products.json must have a "products" array');
-    }
-    return content.products;
+    return Array.isArray(content.products) ? content.products : [];
 }
 
 function normalizePrice(v) {

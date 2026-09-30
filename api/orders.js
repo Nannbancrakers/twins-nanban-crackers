@@ -43,6 +43,35 @@ function configError() {
     return 'GitHub environment variables (GITHUB_OWNER, GITHUB_REPO, GITHUB_BRANCH, GITHUB_TOKEN) are not configured';
 }
 
+/**
+ * Decode the raw bytes of orders.json into an object.
+ *
+ * An empty (0 byte) file is the legitimate "no orders yet" state, so it maps to
+ * an empty list instead of throwing. Anything non-empty but unparseable is a
+ * real corruption problem: we surface it instead of silently pretending there
+ * are no orders, because the next write would overwrite the good data.
+ */
+function decodeOrdersFile(raw) {
+    if (raw == null || String(raw).trim() === '') {
+        return { orders: [] };
+    }
+
+    let parsed;
+    try {
+        parsed = JSON.parse(raw);
+    } catch (e) {
+        throw new Error(`${REPO_FILE} is not valid JSON (${e.message}). Repair the file in GitHub before continuing.`);
+    }
+
+    // Tolerate a bare array (legacy hand-written shape) instead of throwing, so
+    // a real order list is never mistaken for "no orders" and overwritten.
+    if (Array.isArray(parsed)) return { orders: parsed };
+    if (!parsed || typeof parsed !== 'object') {
+        throw new Error(`${REPO_FILE} must contain a JSON object with an "orders" array.`);
+    }
+    return parsed;
+}
+
 /** Get the current file content + SHA from GitHub. */
 async function getGitHubFile() {
     const { owner, repo, branch, token } = env();
@@ -57,15 +86,25 @@ async function getGitHubFile() {
         }
     });
 
+    // The file has never been created yet. GitHub requires no `sha` when
+    // creating a new file, which putGitHubFile() handles via sha === null.
+    if (res.status === 404) {
+        return { sha: null, content: { orders: [] } };
+    }
+
     if (!res.ok) {
         const text = await res.text();
         throw new Error(`GitHub read failed (${res.status}): ${text}`);
     }
 
     const data = await res.json();
+    const raw = data && typeof data.content === 'string'
+        ? Buffer.from(data.content, 'base64').toString('utf8')
+        : '';
+
     return {
-        sha: data.sha,
-        content: JSON.parse(Buffer.from(data.content, 'base64').toString('utf8'))
+        sha: data ? data.sha || null : null,
+        content: decodeOrdersFile(raw)
     };
 }
 
@@ -75,6 +114,14 @@ async function putGitHubFile(sha, content, message) {
     if (!owner || !repo || !token) throw new Error(configError());
 
     const url = `https://api.github.com/repos/${owner}/${repo}/contents/${REPO_FILE}`;
+    const payload = {
+        message,
+        content: Buffer.from(JSON.stringify(content)).toString('base64'),
+        branch
+    };
+    // Omitting `sha` is what tells GitHub to create a brand new file.
+    if (sha) payload.sha = sha;
+
     const res = await fetch(url, {
         method: 'PUT',
         headers: {
@@ -83,12 +130,7 @@ async function putGitHubFile(sha, content, message) {
             'User-Agent': 'twins-nanban-admin',
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-            message,
-            content: Buffer.from(JSON.stringify(content)).toString('base64'),
-            sha,
-            branch
-        })
+        body: JSON.stringify(payload)
     });
 
     if (res.status === 409) {
@@ -104,10 +146,7 @@ async function putGitHubFile(sha, content, message) {
 /** Retrieve orders array from the GitHub repo (single source of truth). */
 async function readOrders() {
     const { content } = await getGitHubFile();
-    if (!content || !Array.isArray(content.orders)) {
-        throw new Error('orders.json must have an "orders" array');
-    }
-    return content.orders;
+    return Array.isArray(content.orders) ? content.orders : [];
 }
 
 function normalizePrice(v) {
