@@ -757,10 +757,11 @@ function renderProducts() {
 
     const cartItems = cart.reduce((map, item) => { map[item.name] = item.quantity || 0; return map; }, {});
 
-    const productRow = (p) => {
+    const productRow = (p, sno) => {
         const qty = cartItems[p.name] || 0;
         return `
         <tr class="product-row" data-price="${p.finalRate}" data-cart-name="${p.name.replace(/"/g, '&quot;')}">
+            <td class="td-center td-sno" data-label="S.No">${sno}</td>
             <td class="td-center"><div class="product-thumb">${thumbFor(p)}</div></td>
             <td class="td-main">
                 <span class="table-product-name">${p.name}</span>
@@ -778,8 +779,9 @@ function renderProducts() {
     }
 
     const rowProducts = [];
+    let sno = 0;
     const bodyHtml = Object.keys(grouped).map(cat => {
-        const rows = grouped[cat].map(p => { rowProducts.push(p); return productRow(p); }).join('');
+        const rows = grouped[cat].map(p => { rowProducts.push(p); return productRow(p, ++sno); }).join('');
         const catDiscount = Math.round((grouped[cat][0].discount || 0) * 100);
         const catLabel = catDiscount > 0 ? `${cat} (${catDiscount}% Discount)` : cat;
         return `
@@ -789,6 +791,7 @@ function renderProducts() {
                 <table class="catalog-table">
                     <thead>
                         <tr>
+                            <th class="th-center th-sno"><span class="sno-full">S.No</span><span class="sno-short">#</span></th>
                             <th class="th-center">Image</th>
                             <th>Product Name</th>
                             <th>Content</th>

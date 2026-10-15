@@ -2496,6 +2496,26 @@ a:hover {
     text-align: center !important;
 }
 
+.catalog-table thead th.th-sno,
+.catalog-table tbody td.td-sno {
+    width: 54px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.catalog-table thead th.th-sno {
+    color: #fff;
+}
+
+.catalog-table tbody td.td-sno {
+    color: var(--text-light);
+}
+
+.catalog-table .sno-short {
+    display: none;
+}
+
 .catalog-table tbody td {
     padding: 0.75rem 0.35rem;
     border-bottom: 1px solid rgba(0, 0, 0, 0.045);

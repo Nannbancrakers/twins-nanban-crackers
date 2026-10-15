@@ -316,32 +316,45 @@
 
     .catalog-table thead th:nth-child(1),
     .catalog-table tbody td:nth-child(1) {
-        width: 14%;
+        width: 6%;
+    }
+
+    .catalog-table .sno-full {
+        display: none;
+    }
+
+    .catalog-table .sno-short {
+        display: inline;
     }
 
     .catalog-table thead th:nth-child(2),
     .catalog-table tbody td:nth-child(2) {
-        width: 29%;
+        width: 14%;
     }
 
-    .catalog-table thead th:nth-child(4),
-    .catalog-table tbody td:nth-child(4) {
-        width: 12%;
+    .catalog-table thead th:nth-child(3),
+    .catalog-table tbody td:nth-child(3) {
+        width: 27%;
     }
 
     .catalog-table thead th:nth-child(5),
     .catalog-table tbody td:nth-child(5) {
-        width: 10%;
+        width: 12%;
     }
 
     .catalog-table thead th:nth-child(6),
     .catalog-table tbody td:nth-child(6) {
-        width: 16%;
+        width: 10%;
     }
 
     .catalog-table thead th:nth-child(7),
     .catalog-table tbody td:nth-child(7) {
-        width: 19%;
+        width: 14%;
+    }
+
+    .catalog-table thead th:nth-child(8),
+    .catalog-table tbody td:nth-child(8) {
+        width: 17%;
     }
 
     .catalog-table tbody .td-main .table-product-name {
@@ -385,12 +398,12 @@
         font-size: 0.75rem;
     }
 
-    .catalog-table tbody tr.product-row > td:nth-child(3),
-    .catalog-table thead th:nth-child(3) {
+    .catalog-table tbody tr.product-row > td:nth-child(4),
+    .catalog-table thead th:nth-child(4) {
         display: none;
     }
 
-    .catalog-table tbody tr.product-row > td:nth-child(4) .table-cell-content {
+    .catalog-table tbody tr.product-row > td:nth-child(5) .table-cell-content {
         display: block;
         margin-top: 0.2rem;
         font-size: 0.7rem;
